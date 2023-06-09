@@ -22,9 +22,6 @@ public:
 
 	Top(const Vertex_type& name) : name(name) {} 
 
-	//проверка на наличие вектора
-	//std::find(vector.begin(); vector.end(); value)
-
 	using Iterator = typename std::vector<Edge<Vertex_type, Distance>>::iterator;
 
 	Iterator begin_edge() const 
@@ -90,8 +87,19 @@ public:
 		return false;
 	}
 
-	//bool has_edge(const Vertex_type& from, const Vertex_type& to) const;
-	bool has_edge(const Edge<Vertex_type, Distance>& edge){
+	bool has_edge(const Vertex_type& from, const Vertex_type& to) const {
+		auto iter = graph.find({ from });
+		if (iter != graph.end()) {
+			for (auto begin_edge = iter->begin_edge(); begin_edge != iter->end_edge(); begin_edge++)
+			{
+				if (begin_edge->to == to)
+					return true;
+			}
+		}
+		return false;
+
+	}
+	bool has_edge(const Edge<Vertex_type, Distance>& edge) const {
 		auto iter = graph.find({ edge.from });
 		if (iter != graph.end()) {
 			for(auto begin_edge = iter->begin_edge(); begin_edge != iter->end_edge(); begin_edge++)
@@ -118,23 +126,85 @@ public:
 
 
 	//проверка-добавление-удаление ребер
-	/*
-	bool remove_edge(const Vertex_type& from, const Vertex_type& to);
-	bool remove_edge(const Edge& e); //c учетом расстояния
+	
+	bool remove_edge(const Vertex_type& from, const Vertex_type& to) const {
+		auto iter = graph.find({ from });
+		if (iter != graph.end()) {
+			auto& edges = iter->second;
+			auto edge_it = std::find(edges.begin(), edges.end(), to);
+			if (edge_it != edges.end()) {
+				edges.erase(edge_it);
+			}
+			return true;
+		}
+		return false;
+
+		/*f (!has_vertex(from) or !has_vertex(to)) { return false; }
+		auto& edges = graph.find(from)->second;
+		auto it = edges.begin();
+		bool is_any_erases = false;
+
+		while (it != edges.end()) {
+			if (it->from == from and it->to == to) {
+				it = edges.erase(it);
+				is_any_erases = true;
+			}
+			else { ++it; }
+		}
+		return is_any_erases;*/
+
+	}
+	bool remove_edge(const Edge<Vertex_type, Distance>& e) const//c учетом расстояния 
+	{
+		auto iter = graph.find({ from });
+		if (iter != graph.end()) {
+			auto& edges = iter->second;
+			auto edge_it = std::find(edges.begin(), edges.end(), to);
+			if (edge_it != edges.end()) {
+				edges.erase(edge_it);
+			}
+			return true;
+		}
+		return false;
+		auto& iter = graph.find(e.from)->second;
+		auto it = iter.begin();
+		bool is_any_erases = false;
+
+		while (it != iter.end()) {
+			if (it->from == e.from and it->to == e.to and it->dist == e.dist) {
+				it = iter.erase(it);
+				is_any_erases = true;
+			}
+			else { ++it; }
+		}
+		return is_any_erases;
+	}
+
+	/*std::vector<Edge<Vertex_type, Distance>> edges(const Vertex& from) {
+		if (!has_vertex(from))
+			throw std::invalid_argument("Has not vertex");
+		return get_vertex(from)->get_edges();
+	}*/
+
 
 	//получение всех ребер, выходящих из вершины
-	std::vector<Edge> edges(const Vertex_type& vertex);
+	//std::vector<Edge> edges(const Vertex_type& vertex);
+	size_t order() const {//порядок
+		return graph.size();
+	}
 
-	//size_t order() const; //порядок
-	//size_t degree() const; //степень
+	size_t degree(const Vertex_type& v) const {//степень
+		if (!has_vertex(v)) { throw std::invalid_argument("The graph has no given vertex!"); }
+		return graph.find(v)->second.size();
+	}
 
 
 	//поиск кратчайшего пути
-	std::vector<Edge> shortest_path(const Vertex_type& from,
-		const Vertex_type& to) const;
+	//std::vector<Edge> shortest_path(const Vertex_type& from,
+		//const Vertex_type& to) const;
 	//обход
-	std::vector<Vertex_type>  walk(const Vertex_type& start_vertex)const;
-	*/
+	//std::vector<Vertex_type>  walk(const Vertex_type& start_vertex)const;
+
 };
 
 
@@ -155,7 +225,8 @@ int main() {
 	graph.add_edge("13123", "Пирогово", 10);
 
 	std::cout << graph.has_edge(Edge<std::string, double>("Пирогово", "hhh", 15665577.435));
-
+	//std::cout << graph.has_edge(Vertex_type<std::string, double>("Пирогово", "hhh"));
+	std::cout << graph.remove_edge(Edge<std::string, double>("Пирогово", "hhh", 15665577.435));
 	int aboba = 0;
 
 }
