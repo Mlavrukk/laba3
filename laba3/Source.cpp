@@ -126,6 +126,7 @@ public:
 
 
 	//проверка-добавление-удаление ребер
+	//не работает это
 	
 	bool remove_edge(const Vertex_type& from, const Vertex_type& to) const {
 		auto iter = graph.find({ from });
@@ -138,20 +139,6 @@ public:
 			return true;
 		}
 		return false;
-
-		/*f (!has_vertex(from) or !has_vertex(to)) { return false; }
-		auto& edges = graph.find(from)->second;
-		auto it = edges.begin();
-		bool is_any_erases = false;
-
-		while (it != edges.end()) {
-			if (it->from == from and it->to == to) {
-				it = edges.erase(it);
-				is_any_erases = true;
-			}
-			else { ++it; }
-		}
-		return is_any_erases;*/
 
 	}
 	bool remove_edge(const Edge<Vertex_type, Distance>& e) const//c учетом расстояния 
